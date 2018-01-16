@@ -25,10 +25,6 @@ do
 	# Check if directory is a git repository and exclude test repositories
 	if [ -d "$f/.git" ] && [[ $f != *"test"* ]] && [[ $f != *"Test"* ]]
 	then
-		echo -en "\033[0;35m" # purple
-		echo "${f}"
-		echo -en "\033[0m"
-
 		mod=0
 		cd $f
 
@@ -36,60 +32,78 @@ do
 		if [ $(git status | grep modified -c) -ne 0 ]
 		then
 			mod=1
+			echo -en "\033[0;35m" # purple
+			echo "${f}"
+
 			echo -en "\033[0;31m" # red
 			echo "Modified files"
 			git status
-			echo -en "\033[0m"
+			echo
 		fi
 
 		# Check for untracked files
 		if [ $(git status | grep Untracked -c) -ne 0 ]
 		then
 			mod=1
+			echo -en "\033[0;35m" # purple
+			echo "${f}"
+
 			echo -en "\033[0;31m" # red
 			echo "Untracked files"
 			git status
-			echo -en "\033[0m"
+			echo
 		fi
 
 		# Check for unpushed changes
 		if [ $(git status | grep 'Your branch is ahead' -c) -ne 0 ]
 		then
 			mod=1
+			echo -en "\033[0;35m" # purple
+			echo "${f}"
+
 			echo -en "\033[0;31m" # red
 			echo "Unpushed commit"
-			echo -en "\033[0m"
+			echo
 		fi
 
 		# Check for external changes
 		if [ $(git status | grep 'Your branch is behind' -c) -ne 0 ]
 		then
 			mod=1
+			echo -en "\033[0;35m" # purple
+			echo "${f}"
+
 			echo -en "\033[0;36m" # blue
 			echo "branch is behind"
-			echo -en "\033[0m"
+			echo
 		else
 			# Check for unreleased changes
 			if [ $(git diff --shortstat origin/develop origin/master | grep 'files changed' -c) -ne 0 ]
 			then
 				mod=1
+				echo -en "\033[0;35m" # purple
+				echo "${f}"
+
 				echo -en "\033[0;33m" # yellow
 				echo "develop has unreleased changes"
-				echo -en "\033[0m"
+				echo
 			fi
 		fi
 
 		# if there are no changes and everything is in sync with origin
-		if [ $mod -eq 0 ]
+		if [ $mod -eq 0 ] && [ -z $showLess ]
 		then
+			echo -en "\033[0;35m" # purple
+			echo "${f}"
+
 			echo -en "\033[0;32m" # green
 			echo "no changes"
-			echo -en "\033[0m"
+			echo
 		fi
 
 		cd ../
-		echo
 		
 	fi
-
+    
+echo -en "\033[0m"
 done
